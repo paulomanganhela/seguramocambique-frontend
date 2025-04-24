@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>SeguraMoçambique - Admin</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    let token = null;
+    let socket;
+
+    async function login() {
+      const user = document.getElementById('usuario').value;
+      const pass = document.getElementById('senha').value;
+      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
+      , {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        token = data.token;
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('painel').style.display = 'block';
+        conectarSocket();
+        listarPagamentos();
+      } else {
+        alert('Login inválido');
+      }
+    }
+
+    async function listarPagamentos() {
+      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
+      , {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const dados = await res.json();
+      atualizarTabela(dados);
+    }
+
+    function atualizarTabela(pagamentos) {
+      const corpo = document.getElementById('lista');
+      corpo.innerHTML = '';
+      pagamentos.forEach(p => {
+        corpo.innerHTML += `<tr><td>${p.date}</td><td>${p.reference}</td><td>${p.phone_number}</td><td>${p.provider}</td><td>${p.amount}</td></tr>`;
+      });
+    }
+
+    function conectarSocket() {
+        socket = io('https://seguramocambique-backend.onrender.com');
+      socket.on('novo_pagamento', (pagamento) => {
+        alert('Novo pagamento recebido!');
+        listarPagamentos();
+      });
+    }
+  </script>
+</head>
+<body>
+  <div id="login">
+    <h2>Login Administrativo</h2>
+    <input id="usuario" placeholder="Usuário" value="admin">
+    <input id="senha" type="password" placeholder="Senha" value="Segura333">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="painel" style="display:none">
+    <h2>Pagamentos Recebidos</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Referência</th>
+          <th>Telemóvel</th>
+          <th>Provedor</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody id="lista"></tbody>
+    </table>
+  </div>
+</body>
+</html>

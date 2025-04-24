@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Histórico de Pagamentos - SeguraMoçambique</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    h2 { color: #007b5e; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    th { background: #007b5e; color: white; }
+    input, select, button { padding: 6px; margin: 5px 5px 10px 0; }
+    .filtros { margin-top: 10px; }
+  </style>
+  <!-- Excel (SheetJS) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- PDF (html2pdf) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <h2>Histórico de Pagamentos</h2>
+
+  <div class="filtros">
+    <label>Data Início: <input type="date" id="dataInicio"></label>
+    <label>Data Fim: <input type="date" id="dataFim"></label>
+    <label>Valor Mínimo: <input type="number" id="valorMin" placeholder="0"></label>
+    <label>Valor Máximo: <input type="number" id="valorMax" placeholder="10000"></label>
+    <label>Provedor:
+        <label>Provedor:
+            <select id="provedor">
+              <option value="">Todos</option>
+              <option value="Mpesa">Mpesa</option>
+              <option value="e-Mola">e-Mola</option>
+              <option value="mKesh Tmcel">mKesh Tmcel</option>
+              <option value="Visa Card">Visa Card</option>
+              <option value="Transferência - Millennium BIM">Transferência - Millennium BIM</option>
+              <option value="Transferência - BCI">Transferência - BCI</option>
+              <option value="Transferência - ABSA">Transferência - ABSA</option>
+              <option value="Transferência - Standard Bank">Transferência - Standard Bank</option>
+              <option value="Transferência - NEDBANK">Transferência - NEDBANK</option>
+            </select>
+          </label>
+          
+          <label>Referência: <input id="referenciaFiltro" placeholder="Ex: TX2025-TESTE"></label>
+          
+    <button onclick="filtrar()">Filtrar</button>
+    <button onclick="listar()">🔄 Atualizar</button>
+    <button onclick="exportarExcel()">📥 Exportar Excel</button>
+    <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
+  </div>
+
+  <div id="tabelaContainer">
+    <table id="tabelaExport">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Referência</th>
+          <th>Telefone</th>
+          <th>Provedor</th>
+          <th>Valor (MZN)</th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQ1NDU4NzY4LCJleHAiOjE3NDU1NDUxNjh9.TReimQTY7PaAtltlMLGtIbfu-ZclMca-PIMYjBqjw64";
+    let dadosPagamentos = [];
+
+    async function listar() {
+      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
+      , {
+        headers: { Authorization: token }
+      });
+      const dados = await res.json();
+      dadosPagamentos = dados;
+      atualizarTabela(dados);
+    }
+
+    function atualizarTabela(pagamentos) {
+      const tabela = document.getElementById("tabela");
+      tabela.innerHTML = "";
+      pagamentos.forEach(p => {
+        const dataFormatada = new Date(p.date).toLocaleString("pt-PT");
+        tabela.innerHTML += `
+          <tr>
+            <td>${dataFormatada}</td>
+            <td>${p.reference}</td>
+            <td>${p.phone_number}</td>
+            <td>${p.provider}</td>
+            <td>${p.amount ?? ""}</td>
+          </tr>`;
+      });
+    }
+
+    function filtrar() {
+      const inicio = document.getElementById("dataInicio").value;
+      const fim = document.getElementById("dataFim").value;
+      const min = parseFloat(document.getElementById("valorMin").value) || 0;
+      const max = parseFloat(document.getElementById("valorMax").value) || 1000000;
+      const provedor = document.getElementById("provedor").value;
+const ref = document.getElementById("referenciaFiltro").value.toLowerCase();
+
+
+const filtrado = dadosPagamentos.filter(p => {
+  const data = new Date(p.date).toISOString().slice(0, 10);
+  return (!inicio || data >= inicio) &&
+         (!fim || data <= fim) &&
+         p.amount >= min &&
+         p.amount <= max &&
+         (!provedor || p.provider === provedor) &&
+         (!ref || p.reference.toLowerCase().includes(ref));
+});
+
+      });
+
+      atualizarTabela(filtrado);
+    }
+
+    function exportarExcel() {
+      const tabela = document.getElementById("tabelaExport");
+      const wb = XLSX.utils.table_to_book(tabela, { sheet: "Pagamentos" });
+      XLSX.writeFile(wb, "Historico_Pagamentos.xlsx");
+    }
+
+    function exportarPDF() {
+      const element = document.getElementById("tabelaContainer");
+      html2pdf().from(element).set({
+        margin: 10,
+        filename: 'Historico_Pagamentos.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).save();
+    }
+
+    listar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Pagamento - SeguraMoçambique</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    h2 { color: #0a6; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-weight: bold; }
+    input, select { padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 5px; }
+    button { padding: 10px 20px; background: #0a6; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #095; }
+    .msg { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Registrar Pagamento</h2>
+  <div class="form-group">
+    <label>Número de Telemóvel:</label>
+    <input id="phone" placeholder="842000000">
+  </div>
+  <div class="form-group">
+    <label>Provedor:</label>
+    <select id="provider">
+      <option>Mpesa</option>
+      <option>e-Mola</option>
+      <option>Airtel Money</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Referência:</label>
+    <input id="reference" placeholder="TX2025-TESTE">
+  </div>
+  <div class="form-group">
+    <label>Valor (MZN):</label>
+    <input id="amount" type="number" placeholder="1000">
+  </div>
+  <button onclick="registrarPagamento()">Registrar Pagamento</button>
+  <div class="msg" id="mensagem"></div>
+
+  <script>
+    // Cole aqui o token que você recebeu do login via Postman
+    const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQ1NDU4NzY4LCJleHAiOjE3NDU1NDUxNjh9.TReimQTY7PaAtltlMLGtIbfu-ZclMca-PIMYjBqjw64";
+
+    async function registrarPagamento() {
+      const dados = {
+        phone_number: document.getElementById('phone').value,
+        provider: document.getElementById('provider').value,
+        reference: document.getElementById('reference').value,
+        amount: parseFloat(document.getElementById('amount').value)
+      };
+
+      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
+      , {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify(dados)
+      });
+
+      const msg = document.getElementById("mensagem");
+      if (res.ok) {
+        const result = await res.json();
+        msg.textContent = "✅ Pagamento registrado com sucesso!";
+        msg.style.color = "green";
+        console.log("Resposta:", result);
+      } else {
+        msg.textContent = "❌ Erro ao registrar pagamento.";
+        msg.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>
