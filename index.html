@@ -11,8 +11,7 @@
     async function login() {
       const user = document.getElementById('usuario').value;
       const pass = document.getElementById('senha').value;
-      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
-      , {
+      const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: user, password: pass })
@@ -30,8 +29,7 @@
     }
 
     async function listarPagamentos() {
-      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
-      , {
+      const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/pagamentos', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const dados = await res.json();
@@ -47,7 +45,7 @@
     }
 
     function conectarSocket() {
-        socket = io('https://seguramocambique-backend.onrender.com');
+      socket = io('https://seguramocambique-backend-1.onrender.com');
       socket.on('novo_pagamento', (pagamento) => {
         alert('Novo pagamento recebido!');
         listarPagamentos();
