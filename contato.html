@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Contato - SeguraMoçambique</title>
+  <link rel="stylesheet" href="style-home.css">
+</head>
+<body>
+<header>
+  <div class="logo">SeguraMoçambique</div>
+</header>
+<section class="contato">
+  <h2>Entre em Contato</h2>
+  <form id="formContato">
+    <input type="text" id="nome" placeholder="Seu Nome" required><br>
+    <input type="email" id="email" placeholder="Seu Email" required><br>
+    <input type="text" id="telefone" placeholder="Seu Telefone" required><br>
+    <textarea id="mensagem" placeholder="Sua Mensagem" required></textarea><br>
+    <button type="submit">Enviar Mensagem</button>
+  </form>
+</section>
+<script>
+document.getElementById('formContato').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const payload = {
+    nome: document.getElementById('nome').value,
+    email: document.getElementById('email').value,
+    telefone: document.getElementById('telefone').value,
+    mensagem: document.getElementById('mensagem').value
+  };
+  await fetch('https://seguramocambique-backend-1.onrender.com/api/mensagens', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  alert('Mensagem enviada com sucesso!');
+  document.getElementById('formContato').reset();
+});
+</script>
+</body>
+</html>
