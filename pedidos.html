@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>SeguraMoçambique - Pedidos de Instalação</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f6f9;
@@ -24,7 +26,7 @@
       padding: 5px 10px;
       background: white;
       border: none;
-      color: #007b5e;
+      color: #03ad86;
       cursor: pointer;
       font-weight: bold;
       border-radius: 5px;
@@ -64,15 +66,16 @@
 </head>
 <body>
 
-<nav>
-  <div>SeguraMoçambique - Pedidos</div>
-  <div>
-    <button onclick="voltarPainel()">Painel</button>
-    <button onclick="exportarExcel()">Exportar Excel</button>
-    <button onclick="logout()">Sair</button>
-  </div>
-</nav>
-
+    <nav>
+        <div>SeguraMoçambique - Pedidos</div>
+        <div>
+          <button onclick="voltarPainel()">Painel</button>
+          <button onclick="exportarExcel()">Exportar Excel</button>
+          <button onclick="exportarPDF()">Exportar PDF</button>
+          <button onclick="logout()">Sair</button>
+        </div>
+      </nav>
+      
 <div class="filtros">
   <input type="date" id="dataInicial" placeholder="Data Inicial">
   <input type="date" id="dataFinal" placeholder="Data Final">
@@ -179,6 +182,34 @@
   function logout() {
     window.location.href = "index.html";
   }
+  function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.text("Pedidos de Instalação - SeguraMoçambique", 14, 15);
+
+  const tabela = document.getElementById("tabelaPedidos");
+  const data = [];
+  
+  for (let i = 1; i < tabela.rows.length; i++) {
+    const row = [];
+    for (let j = 0; j < tabela.rows[i].cells.length; j++) {
+      row.push(tabela.rows[i].cells[j].innerText);
+    }
+    data.push(row);
+  }
+
+  doc.autoTable({
+    head: [[
+      "Data", "Nome", "Telefone", "Email", "Cidade", "Tipo de Câmera", "Compartimentos"
+    ]],
+    body: data,
+    startY: 20,
+    styles: { fontSize: 8 }
+  });
+
+  doc.save("pedidos_instalacao_segura.pdf");
+}
 
   carregarPedidos();
 </script>
