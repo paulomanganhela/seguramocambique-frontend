@@ -54,27 +54,110 @@
   </script>
 </head>
 <body>
-  <div id="login">
-    <h2>Login Administrativo</h2>
-    <input id="usuario" placeholder="Usuário" value="admin">
-    <input id="senha" type="password" placeholder="Senha" value="Segura333">
-    <button onclick="login()">Entrar</button>
-  </div>
-
-  <div id="painel" style="display:none">
-    <h2>Pagamentos Recebidos</h2>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Referência</th>
-          <th>Telemóvel</th>
-          <th>Provedor</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
-  </div>
+  <body>
+    <!-- Menu Superior -->
+    <nav style="background-color: #007b5e; padding: 10px; color: white; display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-weight: bold;">SeguraMoçambique - Administração</div>
+      <div>
+        <button onclick="mostrarPainel()" style="margin-right: 10px;">Pagamentos</button>
+        <button onclick="irParaPedidos()" style="margin-right: 10px;">Pedidos</button>
+        <button onclick="logout()">Sair</button>
+      </div>
+    </nav>
+  
+    <!-- Login -->
+    <div id="login" style="margin-top: 20px;">
+      <h2>Login Administrativo</h2>
+      <input id="usuario" placeholder="Usuário" value="admin">
+      <input id="senha" type="password" placeholder="Senha" value="Segura333">
+      <button onclick="login()">Entrar</button>
+    </div>
+  
+    <!-- Painel Administrativo -->
+    <div id="painel" style="display:none; margin-top: 20px;">
+      <h2>Pagamentos Recebidos</h2>
+      <table border="1" style="width: 100%; background: white; border-collapse: collapse;">
+        <thead style="background-color: #007b5e; color: white;">
+          <tr>
+            <th>Data</th>
+            <th>Referência</th>
+            <th>Telemóvel</th>
+            <th>Provedor</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+  
+    <script>
+      let token = null;
+      let socket;
+  
+      async function login() {
+        const user = document.getElementById('usuario').value;
+        const pass = document.getElementById('senha').value;
+        const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          token = data.token;
+          document.getElementById('login').style.display = 'none';
+          document.getElementById('painel').style.display = 'block';
+          conectarSocket();
+          listarPagamentos();
+        } else {
+          alert('Login inválido');
+        }
+      }
+  
+      async function listarPagamentos() {
+        const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/pagamentos', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const dados = await res.json();
+        atualizarTabela(dados);
+      }
+  
+      function atualizarTabela(pagamentos) {
+        const corpo = document.getElementById('lista');
+        corpo.innerHTML = '';
+        pagamentos.forEach(p => {
+          corpo.innerHTML += `<tr>
+            <td>${new Date(p.date).toLocaleString('pt-MZ')}</td>
+            <td>${p.reference}</td>
+            <td>${p.phone_number}</td>
+            <td>${p.provider}</td>
+            <td>${p.amount.toLocaleString('pt-MZ')} MT</td>
+          </tr>`;
+        });
+      }
+  
+      function conectarSocket() {
+        socket = io('https://seguramocambique-backend-1.onrender.com');
+        socket.on('novo_pagamento', (pagamento) => {
+          alert('Novo pagamento recebido!');
+          listarPagamentos();
+        });
+      }
+  
+      function irParaPedidos() {
+        window.location.href = "pedidos.html"; 
+      }
+  
+      function mostrarPainel() {
+        window.location.href = "index.html"; 
+      }
+  
+      function logout() {
+        token = null;
+        window.location.reload();
+      }
+    </script>
+  </body>
+  
 </body>
 </html>
