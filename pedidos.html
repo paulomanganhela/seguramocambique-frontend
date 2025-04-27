@@ -1,1 +1,71 @@
 <h1>Listagem de Pedidos Recebidos</h1>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos Recebidos - SeguraMoçambique</title>
+  <link rel="stylesheet" href="style-home.css">
+</head>
+<body>
+<header>
+  <div class="logo">SeguraMoçambique</div>
+</header>
+
+<section class="contato">
+  <h2>Pedidos de Instalação Recebidos</h2>
+  <button onclick="exportarExcel()">Exportar para Excel</button>
+  <table border="1" style="width:100%;margin-top:20px;">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th>Tipo de Casa</th>
+        <th>Nr Compartimentos</th>
+        <th>Tipo de Câmera</th>
+        <th>Armazenamento</th>
+        <th>Valor Estimado</th>
+        <th>Transporte</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="listaPedidos"></tbody>
+  </table>
+</section>
+
+<script>
+async function carregarPedidos() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/pedidos', {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  const pedidos = await res.json();
+  const corpo = document.getElementById('listaPedidos');
+  corpo.innerHTML = '';
+  pedidos.forEach(p => {
+    corpo.innerHTML += `
+      <tr>
+        <td>${p.nome}</td>
+        <td>${p.telefone}</td>
+        <td>${p.email}</td>
+        <td>${p.tipo_casa}</td>
+        <td>${p.numero_compartimentos}</td>
+        <td>${p.tipo_camera}</td>
+        <td>${p.armazenamento}</td>
+        <td>${p.valor_estimado} MZN</td>
+        <td>${p.valor_transporte} MZN</td>
+        <td>${new Date(p.data).toLocaleDateString('pt-PT')}</td>
+      </tr>
+    `;
+  });
+}
+
+function exportarExcel() {
+  window.print(); // (iremos depois melhorar usando biblioteca SheetJS)
+}
+
+carregarPedidos();
+</script>
+
+</body>
+</html>
