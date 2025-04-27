@@ -1,1 +1,1 @@
-console.log('Pedido.js carregado.');
+Conteúdo de exemplo para pedido.js
