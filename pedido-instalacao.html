@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido de Instalação - SeguraMoçambique</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>Pedido de Instalação de Sistemas de Segurança</h2>
+
+  <form id="form-pedido" style="background: #fff; padding: 20px; border-radius: 10px; max-width: 800px; margin: auto;">
+    
+    <h3>Informações do Cliente</h3>
+    <label>Nome Completo:</label>
+    <input type="text" name="nome" required>
+
+    <label>Telemóvel / WhatsApp:</label>
+    <input type="tel" name="telefone" required>
+
+    <label>Email (opcional):</label>
+    <input type="email" name="email">
+
+    <label>Tipo de Local:</label>
+    <select name="tipo_local" required>
+      <option value="">Selecione</option>
+      <option>Residência</option>
+      <option>Escritório</option>
+      <option>Loja</option>
+      <option>Armazém</option>
+    </select>
+
+    <h3>Detalhes do Imóvel</h3>
+    <label>Número de Quartos:</label>
+    <input type="number" name="quartos" min="0">
+
+    <label>Número de Salas:</label>
+    <input type="number" name="salas" min="0">
+
+    <label>Tem Cozinha?</label>
+    <input type="checkbox" name="cozinha"> Sim
+
+    <label>Tem Garagem?</label>
+    <input type="checkbox" name="garagem"> Sim
+
+    <label>Áreas Externas (Quintal, Terraço)?</label>
+    <input type="checkbox" name="externas"> Sim
+
+    <label>Número Total de Compartimentos:</label>
+    <input type="number" name="total_compartimentos" min="1">
+
+    <h3>Preferências de Equipamentos</h3>
+    <label>Tipo de Câmeras:</label><br>
+    <input type="checkbox" name="cameras" value="Solar 4G"> Solar 4G<br>
+    <input type="checkbox" name="cameras" value="Solar WiFi"> Solar WiFi<br>
+    <input type="checkbox" name="cameras" value="WiFi PoE"> WiFi PoE<br>
+    <input type="checkbox" name="cameras" value="Com Cabo"> Cabeada<br>
+    <input type="checkbox" name="cameras" value="360°"> 360° Rotativa<br>
+
+    <label>Modelo de Equipamento:</label><br>
+    <input type="checkbox" name="equipamentos" value="DVR"> DVR<br>
+    <input type="checkbox" name="equipamentos" value="NVR"> NVR<br>
+    <input type="checkbox" name="equipamentos" value="HUB Pro"> HUB Pro<br>
+    <input type="checkbox" name="equipamentos" value="HUB"> HUB<br>
+
+    <label>Capacidade de Armazenamento:</label><br>
+    <input type="checkbox" name="armazenamento" value="64GB"> MicroSD 64GB<br>
+    <input type="checkbox" name="armazenamento" value="128GB"> MicroSD 128GB<br>
+    <input type="checkbox" name="armazenamento" value="256GB"> MicroSD 256GB<br>
+    <input type="checkbox" name="armazenamento" value="512GB"> MicroSD 512GB<br>
+    <input type="checkbox" name="armazenamento" value="1TB"> 1TB<br>
+    <input type="checkbox" name="armazenamento" value="2TB"> 2TB<br>
+
+    <label>Quantidade de Câmeras:</label>
+    <input type="number" name="quantidade_cameras" min="1">
+
+    <label>Observações:</label>
+    <textarea name="observacoes" rows="4" placeholder="Descreva algo especial se necessário..."></textarea>
+
+    <label>Endereço de Instalação:</label>
+    <textarea name="endereco" rows="3" required></textarea>
+<!-- Adicionar no final do formulário antes do botão -->
+<h3>Resumo do Orçamento</h3>
+
+<label>Preço por Câmera (Instalação + Equipamento) (MZN):</label>
+<input type="number" id="preco_por_camera" value="1500" readonly>
+
+<label>Cidade para Transporte:</label>
+<select id="cidade_transporte" required onchange="calcularTransporte()">
+  <option value="">Selecione</option>
+  <option value="Maputo">Maputo (1000Mt)</option>
+  <option value="Matola">Matola (2000Mt)</option>
+  <option value="Marracuene">Marracuene (2500Mt)</option>
+  <option value="Outro">Outro (120Mt/km)</option>
+</select>
+
+<label>Distância (Km) (somente para "Outro"):</label>
+<input type="number" id="distancia_km" min="0" value="0" onchange="calcularTransporte()" disabled>
+
+<label>Valor Estimado de Instalação (MZN):</label>
+<input type="text" id="valor_instalacao" readonly>
+
+<label>Valor de Transporte (MZN):</label>
+<input type="text" id="valor_transporte" readonly>
+
+<label>Total Estimado (MZN):</label>
+<input type="text" id="total_estimado" readonly>
+
+<br><br>
+
+    <br><br>
+    <button type="submit" style="background: #007b5e; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Pedir Orçamento Agora</button>
+  </form>
+  <script src="pedido.js"></script>
+
+</body>
+</html>

@@ -1,77 +1,124 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Registrar Pagamento - SeguraMoçambique</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-    h2 { color: #0a6; }
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-weight: bold; }
-    input, select { padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 5px; }
-    button { padding: 10px 20px; background: #0a6; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #095; }
-    .msg { margin-top: 20px; font-weight: bold; }
-  </style>
+  <title>Pedido de Instalação - SeguraMoçambique</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>Registrar Pagamento</h2>
-  <div class="form-group">
-    <label>Número de Telemóvel:</label>
-    <input id="phone" placeholder="842000000">
-  </div>
-  <div class="form-group">
-    <label>Provedor:</label>
-    <select id="provider">
-      <option>Mpesa</option>
-      <option>e-Mola</option>
-      <option>Airtel Money</option>
+
+  <h2>Pedido de Instalação de Sistemas de Segurança</h2>
+
+  <form id="formularioPedido">
+    <label for="nome">Nome Completo:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="telefone">Telefone:</label>
+    <input type="text" id="telefone" name="telefone" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+
+    <label for="cidade">Cidade:</label>
+    <select id="cidade" name="cidade" required onchange="calcularTransporte()">
+      <option value="">-- Selecionar --</option>
+      <option value="Maputo">Maputo</option>
+      <option value="Matola">Matola</option>
+      <option value="Marracuene">Marracuene</option>
+      <option value="Outro">Outro (especificar abaixo)</option>
     </select>
-  </div>
-  <div class="form-group">
-    <label>Referência:</label>
-    <input id="reference" placeholder="TX2025-TESTE">
-  </div>
-  <div class="form-group">
-    <label>Valor (MZN):</label>
-    <input id="amount" type="number" placeholder="1000">
-  </div>
-  <button onclick="registrarPagamento()">Registrar Pagamento</button>
-  <div class="msg" id="mensagem"></div>
+
+    <label for="kmExtra" id="labelKm" style="display:none;">Distância Extra (km):</label>
+    <input type="number" id="kmExtra" name="kmExtra" min="0" style="display:none;" onchange="calcularTransporte()">
+
+    <label for="tipoCamera">Tipo de Câmera:</label>
+    <select id="tipoCamera" name="tipoCamera" required onchange="calcularEstimativa()">
+      <option value="">-- Selecionar --</option>
+      <option value="Solar4G">Solar 4G</option>
+      <option value="SolarWiFi">Solar WiFi</option>
+      <option value="WiFiPOE">WiFi POE</option>
+      <option value="Cabo">Com Cabo</option>
+      <option value="DVR">DVR</option>
+      <option value="NVR">NVR</option>
+      <option value="HubPro">Hub Pro</option>
+      <option value="Hub">Hub</option>
+    </select>
+
+    <label for="tipoMemoria">Memória MicroSD:</label>
+    <select id="tipoMemoria" name="tipoMemoria" required onchange="calcularEstimativa()">
+      <option value="">-- Selecionar --</option>
+      <option value="64GB">64GB</option>
+      <option value="128GB">128GB</option>
+      <option value="256GB">256GB</option>
+      <option value="512GB">512GB</option>
+      <option value="1TB">1TB</option>
+      <option value="2TB">2TB</option>
+    </select>
+
+    <label for="nrQuartos">Número de Quartos:</label>
+    <input type="number" id="nrQuartos" name="nrQuartos" min="0" required onchange="calcularEstimativa()">
+
+    <label for="nrSalas">Número de Salas de Visita:</label>
+    <input type="number" id="nrSalas" name="nrSalas" min="0" required onchange="calcularEstimativa()">
+
+    <label for="nrCozinhas">Número de Cozinhas:</label>
+    <input type="number" id="nrCozinhas" name="nrCozinhas" min="0" required onchange="calcularEstimativa()">
+
+    <label for="nrGaragens">Número de Garagens:</label>
+    <input type="number" id="nrGaragens" name="nrGaragens" min="0" required onchange="calcularEstimativa()">
+
+    <label for="acessos">Acessos Extras (jardim, quintal, etc):</label>
+    <input type="text" id="acessos" name="acessos">
+
+    <h3>Estimativa de Preço:</h3>
+    <p id="precoEstimado">Aguardando seleção...</p>
+
+    <button type="submit">Enviar Pedido</button>
+  </form>
 
   <script>
-    // Cole aqui o token que você recebeu do login via Postman
-    const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQ1NDU4NzY4LCJleHAiOjE3NDU1NDUxNjh9.TReimQTY7PaAtltlMLGtIbfu-ZclMca-PIMYjBqjw64";
+    function calcularTransporte() {
+      const cidade = document.getElementById('cidade').value;
+      const kmExtraInput = document.getElementById('kmExtra');
+      const labelKm = document.getElementById('labelKm');
 
-    async function registrarPagamento() {
-      const dados = {
-        phone_number: document.getElementById('phone').value,
-        provider: document.getElementById('provider').value,
-        reference: document.getElementById('reference').value,
-        amount: parseFloat(document.getElementById('amount').value)
-      };
-
-      const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
-      , {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token
-        },
-        body: JSON.stringify(dados)
-      });
-
-      const msg = document.getElementById("mensagem");
-      if (res.ok) {
-        const result = await res.json();
-        msg.textContent = "✅ Pagamento registrado com sucesso!";
-        msg.style.color = "green";
-        console.log("Resposta:", result);
+      if (cidade === "Outro") {
+        kmExtraInput.style.display = 'block';
+        labelKm.style.display = 'block';
       } else {
-        msg.textContent = "❌ Erro ao registrar pagamento.";
-        msg.style.color = "red";
+        kmExtraInput.style.display = 'none';
+        labelKm.style.display = 'none';
+        kmExtraInput.value = 0;
       }
+      calcularEstimativa();
     }
+
+    function calcularEstimativa() {
+      const cidade = document.getElementById('cidade').value;
+      const kmExtra = parseInt(document.getElementById('kmExtra').value) || 0;
+      const nrQuartos = parseInt(document.getElementById('nrQuartos').value) || 0;
+      const nrSalas = parseInt(document.getElementById('nrSalas').value) || 0;
+      const nrCozinhas = parseInt(document.getElementById('nrCozinhas').value) || 0;
+      const nrGaragens = parseInt(document.getElementById('nrGaragens').value) || 0;
+
+      let transporte = 0;
+      if (cidade === "Maputo") transporte = 1000;
+      else if (cidade === "Matola") transporte = 2000;
+      else if (cidade === "Marracuene") transporte = 2500;
+      else if (cidade === "Outro") transporte = 2500 + (kmExtra * 120);
+
+      const precoInstalacao = (nrQuartos + nrSalas + nrCozinhas + nrGaragens) * 1500;
+      const total = precoInstalacao + transporte;
+
+      document.getElementById('precoEstimado').textContent = `Instalação: ${precoInstalacao.toLocaleString()} MT + Transporte: ${transporte.toLocaleString()} MT = Total: ${total.toLocaleString()} MT`;
+    }
+
+    document.getElementById('formularioPedido').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Pedido enviado! A nossa equipa entrará em contacto. Obrigado.');
+      // Aqui futuramente enviaremos para o backend, e-mail ou API
+    });
   </script>
+
 </body>
 </html>
