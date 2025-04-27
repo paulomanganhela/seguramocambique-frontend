@@ -1,1 +1,47 @@
 <h1>Painel Administrativo - Login</h1>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Administração - SeguraMoçambique</title>
+  <link rel="stylesheet" href="style-home.css">
+</head>
+<body>
+<header>
+  <div class="logo">SeguraMoçambique</div>
+</header>
+
+<section class="contato">
+  <h2>Login Administrativo</h2>
+  <form id="formLogin">
+    <input type="text" id="usuario" placeholder="Usuário" required><br>
+    <input type="password" id="senha" placeholder="Senha" required><br>
+    <button type="submit">Entrar</button>
+  </form>
+</section>
+
+<script>
+document.getElementById('formLogin').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const payload = {
+    username: document.getElementById('usuario').value,
+    password: document.getElementById('senha').value
+  };
+  const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (res.ok) {
+    const data = await res.json();
+    localStorage.setItem('token', data.token);
+    alert('Login bem-sucedido!');
+    window.location.href = 'pedidos.html'; // Redireciona para lista de pedidos
+  } else {
+    alert('Usuário ou senha inválidos!');
+  }
+});
+</script>
+
+</body>
+</html>
