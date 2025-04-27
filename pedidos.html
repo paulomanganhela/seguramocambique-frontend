@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos de Instalação - SeguraMoçambique</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>Pedidos de Instalação</h2>
+
+  <table border="1" style="width:100%; background:white; border-collapse: collapse;">
+    <thead style="background-color: #007b5e; color: white;">
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th>Cidade</th>
+        <th>Bairro</th>
+        <th>Tipo de Câmeras</th>
+        <th>Compartimentos</th>
+        <th>Valor Estimado</th>
+        <th>Transporte</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaPedidos"></tbody>
+  </table>
+
+  <script>
+    async function carregarPedidos() {
+      try {
+        const resposta = await fetch("https://seguramocambique-backend-1.onrender.com/api/pedidos");
+        const pedidos = await resposta.json();
+        const tabela = document.getElementById('tabelaPedidos');
+        tabela.innerHTML = '';
+
+        pedidos.forEach(p => {
+          tabela.innerHTML += `
+            <tr>
+              <td>${p.nome}</td>
+              <td>${p.telefone}</td>
+              <td>${p.email}</td>
+              <td>${p.cidade}</td>
+              <td>${p.bairro}</td>
+              <td>${p.tipo_camera.join(', ')}</td>
+              <td>${p.nr_compartimentos}</td>
+              <td>${p.valor_estimado.toLocaleString('pt-MZ')} MT</td>
+              <td>${p.transporte.toLocaleString('pt-MZ')} MT</td>
+              <td>${new Date(p.data).toLocaleString('pt-MZ')}</td>
+            </tr>
+          `;
+        });
+      } catch (error) {
+        alert('Erro ao carregar pedidos.');
+        console.error(error);
+      }
+    }
+
+    carregarPedidos();
+  </script>
+</body>
+</html>
