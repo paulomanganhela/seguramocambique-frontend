@@ -1,4 +1,7 @@
 <h1>Formulário de Pedido de Instalação</h1>
+
+<# Código HTML corrigido
+html_code = """
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -56,14 +59,14 @@
 
 <script>
 function calcularValor(quantidade) {
-  return quantidade * 2500; // Exemplo de preço por compartimento
+  return quantidade * 2500;
 }
 
 function calcularTransporte(localizacao) {
   if (localizacao.toLowerCase().includes("maputo")) return 1000;
   if (localizacao.toLowerCase().includes("matola")) return 2000;
   if (localizacao.toLowerCase().includes("marracuene")) return 2500;
-  return 120 * 10; // Supondo 10km se for fora
+  return 120 * 10;
 }
 
 document.getElementById('formPedido').addEventListener('submit', async function(e) {
@@ -102,3 +105,4 @@ document.getElementById('formPedido').addEventListener('submit', async function(
 
 </body>
 </html>
+"""
