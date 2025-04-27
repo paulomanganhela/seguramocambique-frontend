@@ -2,61 +2,186 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Pedidos de Instalação - SeguraMoçambique</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>SeguraMoçambique - Pedidos de Instalação</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      background-color: #007b5e;
+      padding: 10px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      background: white;
+      border: none;
+      color: #007b5e;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+    .filtros {
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .filtros input, .filtros select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .tabela {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #007b5e;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <h2>Pedidos de Instalação</h2>
 
-  <table border="1" style="width:100%; background:white; border-collapse: collapse;">
-    <thead style="background-color: #007b5e; color: white;">
+<nav>
+  <div>SeguraMoçambique - Pedidos</div>
+  <div>
+    <button onclick="voltarPainel()">Painel</button>
+    <button onclick="exportarExcel()">Exportar Excel</button>
+    <button onclick="logout()">Sair</button>
+  </div>
+</nav>
+
+<div class="filtros">
+  <input type="date" id="dataInicial" placeholder="Data Inicial">
+  <input type="date" id="dataFinal" placeholder="Data Final">
+  <select id="cidade">
+    <option value="">Todas Cidades</option>
+    <option value="Maputo">Maputo</option>
+    <option value="Matola">Matola</option>
+    <option value="Marracuene">Marracuene</option>
+    <option value="Outros">Outros</option>
+  </select>
+  <select id="tipoCamera">
+    <option value="">Todos Tipos</option>
+    <option value="Solar4G">Solar 4G</option>
+    <option value="SolarWiFi">Solar WiFi</option>
+    <option value="WiFiPOE">WiFi PoE</option>
+    <option value="Cabo">Com Cabo</option>
+  </select>
+  <button onclick="aplicarFiltros()">Aplicar Filtros</button>
+  <button onclick="limparFiltros()">Limpar</button>
+</div>
+
+<div class="tabela">
+  <table id="tabelaPedidos">
+    <thead>
       <tr>
+        <th>Data</th>
         <th>Nome</th>
         <th>Telefone</th>
         <th>Email</th>
         <th>Cidade</th>
-        <th>Bairro</th>
-        <th>Tipo de Câmeras</th>
+        <th>Tipo de Câmera</th>
         <th>Compartimentos</th>
-        <th>Valor Estimado</th>
-        <th>Transporte</th>
-        <th>Data</th>
       </tr>
     </thead>
-    <tbody id="tabelaPedidos"></tbody>
+    <tbody></tbody>
   </table>
+</div>
 
-  <script>
-    async function carregarPedidos() {
-      try {
-        const resposta = await fetch("https://seguramocambique-backend-1.onrender.com/api/pedidos");
-        const pedidos = await resposta.json();
-        const tabela = document.getElementById('tabelaPedidos');
-        tabela.innerHTML = '';
+<script>
+  let pedidos = [];
 
-        pedidos.forEach(p => {
-          tabela.innerHTML += `
-            <tr>
-              <td>${p.nome}</td>
-              <td>${p.telefone}</td>
-              <td>${p.email}</td>
-              <td>${p.cidade}</td>
-              <td>${p.bairro}</td>
-              <td>${p.tipo_camera.join(', ')}</td>
-              <td>${p.nr_compartimentos}</td>
-              <td>${p.valor_estimado.toLocaleString('pt-MZ')} MT</td>
-              <td>${p.transporte.toLocaleString('pt-MZ')} MT</td>
-              <td>${new Date(p.data).toLocaleString('pt-MZ')}</td>
-            </tr>
-          `;
-        });
-      } catch (error) {
-        alert('Erro ao carregar pedidos.');
-        console.error(error);
-      }
+  async function carregarPedidos() {
+    try {
+      const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/pedidos');
+      pedidos = await res.json();
+      atualizarTabela(pedidos);
+    } catch (err) {
+      console.error('Erro ao carregar pedidos:', err);
     }
+  }
 
-    carregarPedidos();
-  </script>
+  function atualizarTabela(lista) {
+    const tbody = document.querySelector('#tabelaPedidos tbody');
+    tbody.innerHTML = '';
+    lista.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${new Date(p.date).toLocaleDateString('pt-MZ')}</td>
+          <td>${p.nome}</td>
+          <td>${p.telefone}</td>
+          <td>${p.email}</td>
+          <td>${p.cidade}</td>
+          <td>${p.tipo_camera}</td>
+          <td>${p.total_compartimentos}</td>
+        </tr>`;
+    });
+  }
+
+  function aplicarFiltros() {
+    const dataIni = document.getElementById('dataInicial').value;
+    const dataFim = document.getElementById('dataFinal').value;
+    const cidade = document.getElementById('cidade').value;
+    const tipoCamera = document.getElementById('tipoCamera').value;
+
+    let filtrados = pedidos.filter(p => {
+      const dataPedido = new Date(p.date);
+      const passaData = (!dataIni || dataPedido >= new Date(dataIni)) && (!dataFim || dataPedido <= new Date(dataFim));
+      const passaCidade = !cidade || p.cidade === cidade;
+      const passaTipo = !tipoCamera || p.tipo_camera === tipoCamera;
+      return passaData && passaCidade && passaTipo;
+    });
+
+    atualizarTabela(filtrados);
+  }
+
+  function limparFiltros() {
+    document.getElementById('dataInicial').value = '';
+    document.getElementById('dataFinal').value = '';
+    document.getElementById('cidade').value = '';
+    document.getElementById('tipoCamera').value = '';
+    atualizarTabela(pedidos);
+  }
+
+  function exportarExcel() {
+    const tabela = document.getElementById('tabelaPedidos');
+    const wb = XLSX.utils.table_to_book(tabela, { sheet: "Pedidos" });
+    XLSX.writeFile(wb, "pedidos_instalacao_segura.xlsx");
+  }
+
+  function voltarPainel() {
+    window.location.href = "index.html";
+  }
+
+  function logout() {
+    window.location.href = "index.html";
+  }
+
+  carregarPedidos();
+</script>
+
 </body>
 </html>
