@@ -4,22 +4,60 @@
   <meta charset="UTF-8">
   <title>Contato - SeguraMoçambique</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="pedido.js" defer></script>
 </head>
-<body style="background-image: url('assets/background.jpg'); background-size: cover; background-attachment: fixed;">
+<body>
+
 <header>
   <div class="logo">SeguraMoçambique</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="contato.html">Contato</a>
+    <a href="pedido-instalacao.html">Pedido de Instalação</a>
+    <a href="admin.html" style="margin-left:auto; background:#00b894; padding:5px 10px; border-radius:5px;">Administração</a>
+  </nav>
 </header>
 
+<section class="banner">
+  <h1>Fale Conosco</h1>
+  <p>Estamos prontos para proteger você!</p>
+</section>
+
 <section class="contato">
-  <h2>Entre em Contato</h2>
+  <h2>Envie sua Mensagem</h2>
   <form id="formContato">
-    <input type="text" id="nome_contato" placeholder="Seu Nome" required><br>
-    <input type="email" id="email_contato" placeholder="Seu Email" required><br>
-    <input type="tel" id="telefone_contato" placeholder="Seu Telefone (+258)" required><br>
-    <textarea id="mensagem" placeholder="Sua mensagem..." rows="5" required></textarea><br>
-    <button type="submit" id="btnContato">Enviar Mensagem</button>
+    <input type="text" id="nome" placeholder="Seu Nome" required><br>
+    <input type="email" id="email" placeholder="Seu Email" required><br>
+    <input type="tel" id="telefone" placeholder="Seu Telefone" required><br>
+    <textarea id="mensagem" placeholder="Sua Mensagem" required style="width:100%; height:120px; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea><br>
+    <button type="submit">Enviar</button>
   </form>
 </section>
+
+<script>
+document.getElementById('formContato').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const payload = {
+    nome: document.getElementById('nome').value,
+    email: document.getElementById('email').value,
+    telefone: document.getElementById('telefone').value,
+    mensagem: document.getElementById('mensagem').value
+  };
+
+  const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/contatos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    alert('Mensagem enviada com sucesso!');
+    document.getElementById('formContato').reset();
+  } else {
+    alert('Erro ao enviar. Tente novamente.');
+  }
+});
+</script>
+
 </body>
 </html>

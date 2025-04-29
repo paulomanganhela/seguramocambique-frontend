@@ -1,1 +1,64 @@
-<h1>Mensagens de Contato Recebidas</h1>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Mensagens Recebidas - SeguraMoçambique</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">SeguraMoçambique</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="contato.html">Contato</a>
+    <a href="pedido-instalacao.html">Pedido de Instalação</a>
+    <a href="admin.html" style="margin-left:auto; background:#00b894; padding:5px 10px; border-radius:5px;">Administração</a>
+  </nav>
+</header>
+
+<section class="contato">
+  <h2>Mensagens Recebidas</h2>
+  <button onclick="exportarExcel()">Exportar para Excel</button>
+  <table border="1" style="width:100%;margin-top:20px;">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Mensagem</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="listaMensagens"></tbody>
+  </table>
+</section>
+
+<script>
+async function carregarMensagens() {
+  const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/contatos');
+  const mensagens = await res.json();
+  const corpo = document.getElementById('listaMensagens');
+  corpo.innerHTML = '';
+  mensagens.forEach(m => {
+    corpo.innerHTML += `
+      <tr>
+        <td>${m.nome}</td>
+        <td>${m.email}</td>
+        <td>${m.telefone}</td>
+        <td>${m.mensagem}</td>
+        <td>${new Date(m.data_criacao).toLocaleDateString('pt-PT')}</td>
+      </tr>
+    `;
+  });
+}
+
+function exportarExcel() {
+  window.print(); // Depois podemos melhorar com SheetJS
+}
+
+carregarMensagens();
+</script>
+
+</body>
+</html>
