@@ -1,36 +1,44 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f4f6f9;
-    color: #333;
-  }
-  
-  header {
-    background-color: #007bff;
+header {
+    background-color: white;
     padding: 10px 20px;
-    color: white;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
   
-  header .logo {
-    font-size: 1.8em;
+  .logo {
+    font-size: 24px;
     font-weight: bold;
+    color: #007bff;
   }
   
   nav a {
-    color: white;
     margin-left: 20px;
     text-decoration: none;
+    color: #007bff;
     font-weight: bold;
+    transition: 0.3s;
   }
   
-  nav a.btn-admin {
-    background: #00b894;
-    padding: 5px 10px;
-    border-radius: 5px;
+  nav a:hover {
+    color: #00b894;
+  }
+  
+  .banner {
+    background-image: url('assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 120px 20px;
+    text-align: center;
+  }
+  
+  .contato {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
   }
   
   section.banner {
