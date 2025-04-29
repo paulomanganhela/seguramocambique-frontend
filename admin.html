@@ -1,10 +1,9 @@
-<h1>Painel Administrativo - Login</h1>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <title>Administração - SeguraMoçambique</title>
-  <link rel="stylesheet" href="style-home.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
@@ -12,35 +11,39 @@
 </header>
 
 <section class="contato">
-  <h2>Login Administrativo</h2>
-  <form id="formLogin">
+  <h2>Área Administrativa</h2>
+  <div id="login">
     <input type="text" id="usuario" placeholder="Usuário" required><br>
     <input type="password" id="senha" placeholder="Senha" required><br>
-    <button type="submit">Entrar</button>
-  </form>
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="painel" style="display:none">
+    <h2>Pedidos Recebidos</h2>
+    <a href="pedidos.html" class="botao">Ver Pedidos</a>
+  </div>
 </section>
 
 <script>
-document.getElementById('formLogin').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const payload = {
-    username: document.getElementById('usuario').value,
-    password: document.getElementById('senha').value
-  };
+let token = null;
+async function login() {
+  const user = document.getElementById('usuario').value;
+  const pass = document.getElementById('senha').value;
   const res = await fetch('https://seguramocambique-backend-1.onrender.com/api/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ username: user, password: pass })
   });
   if (res.ok) {
     const data = await res.json();
-    localStorage.setItem('token', data.token);
-    alert('Login bem-sucedido!');
-    window.location.href = 'pedidos.html'; // Redireciona para lista de pedidos
+    token = data.token;
+    localStorage.setItem('token', token);
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('painel').style.display = 'block';
   } else {
-    alert('Usuário ou senha inválidos!');
+    alert('Credenciais inválidas!');
   }
-});
+}
 </script>
 
 </body>

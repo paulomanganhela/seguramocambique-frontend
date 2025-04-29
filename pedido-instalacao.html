@@ -1,1 +1,55 @@
-Conteúdo de exemplo para pedido-instalacao.html
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido de Instalação</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="pedido.js" defer></script>
+</head>
+<body style="background-image: url('assets/background.jpg'); background-size: cover; background-attachment: fixed;">
+<header>
+  <div class="logo">SeguraMoçambique</div>
+</header>
+
+<section class="contato">
+  <h2>Formulário de Pedido de Instalação</h2>
+  <form id="formPedido">
+    <input type="text" id="nome" placeholder="Nome Completo" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="tel" id="telefone" placeholder="Telefone (+258)" required><br>
+
+    <select id="tipo_casa" required>
+      <option value="">Tipo de Casa</option>
+      <option value="Residência">Residência</option>
+      <option value="Escritório">Escritório</option>
+      <option value="Armazém">Armazém</option>
+    </select><br>
+
+    <input type="number" id="numero_compartimentos" placeholder="Número de Compartimentos" required><br>
+
+    <select id="tipo_camera" required>
+      <option value="">Tipo de Câmera</option>
+      <option value="Solar 4G">Solar 4G</option>
+      <option value="Solar WiFi">Solar WiFi</option>
+      <option value="WiFi PoE">WiFi PoE</option>
+      <option value="Com Cabo">Com Cabo</option>
+      <option value="DVR/NVR">DVR/NVR</option>
+    </select><br>
+
+    <select id="armazenamento" required>
+      <option value="">Armazenamento</option>
+      <option value="64GB">64GB</option>
+      <option value="128GB">128GB</option>
+      <option value="256GB">256GB</option>
+      <option value="512GB">512GB</option>
+      <option value="1TB">1TB</option>
+      <option value="2TB">2TB</option>
+    </select><br>
+
+    <input type="text" id="localizacao" placeholder="Localização (Cidade)" required><br>
+
+    <button type="submit" id="btnEnviar">Enviar Pedido</button>
+  </form>
+</section>
+</body>
+</html>
