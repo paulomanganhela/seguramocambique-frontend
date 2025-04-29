@@ -52,7 +52,7 @@
       const res = await fetch('https://seguramocambique-backend.onrender.com/api/...')
       , {
         headers: { Authorization: token }
-      });
+      };
       pagamentos = await res.json();
       atualizarTotais();
       gerarGraficoValor();
